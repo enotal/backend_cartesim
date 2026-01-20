@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Resources\UserResource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
@@ -178,39 +179,34 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => "required|string",
-            'password' => "required|string",
+            'email' => "required|email",
+            'password' => "required",
         ]);
 
         if ($validator->fails()) {
             return response()->json(['success' => false, 'type' => "danger", 'message' => "Erreur : email ou mot de passe requis !", 'status' => 201]);
         }
 
-        $resource = User::with('roles')->where('email', $request->email)->first();
-
-        if ($resource) {
-            if ($resource->active === "oui") {
-                $response = password_verify($request->password, $resource->password);
-                if ($response) {
-                    // Préparation des données 
-                    $data = [
-                        'id' => $resource->id,
-                        'email' => $resource->email,
-                        'name' => $resource->name,
-                        'lastname' => $resource->lastname,
-                        'sexe' => $resource->sexe,
-                        'roles' => $resource->roles->pluck('rlelibelle'),
-                    ];
-                    // Mise à jour du statut
-                    User::findOrFail($resource->id)->update(['status' => "oui"]);
-                    // Création de la session de l'utilisateur 
-                    session('cartesim.auth.' . $resource->id, $data);
-                    // 
-                    return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : connexion validée !", 'data' => $data, 'status' => 200]);
-                }
-                return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : email ou mot de passe incorrect !", 'status' => 201]);
-            }
-            return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : désolé, votre compte est désactivé !", 'status' => 201]);
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : email ou mot de passe incorrect !"], 401);
+        }
+        $user = Auth::user();
+        $key = $user->email . date('Y-m-d') . time();
+        $token = $user->createToken($key)->plainTextToken;
+        // Préparation des données 
+        $data = [
+            'id' => $user->id,
+            'email' => $user->email,
+            'name' => $user->name,
+            'lastname' => $user->lastname,
+            'sexe' => $user->sexe,
+            'roles' => $user->roles->pluck('rlelibelle'),
+            'token' => $token,
+        ];
+        // Mise à jour du statut
+        $response = User::findOrFail($user->id)->update(['status' => "oui"]);
+        if ($response) {
+            return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : connexion validée !", 'data' => $data, 'status' => 200]);
         }
         return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : email ou mot de passe incorrect !", 'status' => 201]);
     }
@@ -218,14 +214,21 @@ class UserController extends Controller
     /**
      * Logout.
      */
-    public function logout(string $id)
+    public function logout(Request $request)
     {
-        // Mise à jour du statut
-        $resource = User::findOrFail($id)->update(['status' => "non"]);
-        // Destruction de la session de l'utilisateur 
-        if ($resource) {
-            session('cartesim.auth.' . $id, "");
-            return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : déconnexion validée !", 'status' => 200]);
+        $user = $request->user();
+        if ($user) {
+            // Deleting user token
+            $response = $user->tokens()->delete();
+            // Updating user status
+            if ($response) {
+                $resource = User::findOrFail($user->id)->update(['status' => "non"]);
+                if ($resource){
+                    return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : déconnexion validée !" . $response, 'status' => 200]); 
+                }
+                return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : token inexistant ou impossible à supprimer !", 'status' => 202]);
+            }
+            return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : token inexistant ou impossible à supprimer !", 'status' => 202]);
         }
         return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : déconnexion non validée !", 'status' => 201]);
     }

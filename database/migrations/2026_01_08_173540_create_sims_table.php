@@ -19,7 +19,7 @@ return new class extends Migration
             $table->date('simdateremise')->nullable();
             $table->date('simdatesuspension')->nullable();
             $table->date('simdateretrait')->nullable();
-            $table->string('simperdue', ["non","oui"])->default("non"); 
+            $table->enum('simperdue', ["non","oui"])->default("non"); 
             $table->string('simdeclarationperte')->nullable(); 
             $table->string('simcommentaire')->nullable();
             $table->timestamps(); 

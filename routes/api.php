@@ -10,55 +10,18 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\RegionController;
 use App\Http\Controllers\DemandeController;
 use App\Http\Controllers\ProvinceController;
-use App\Http\Controllers\RoleUserController;
 use App\Http\Controllers\RepondantController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\SessionremiseController;
 use App\Http\Controllers\TyperepondantController;
 use App\Http\Controllers\SessiondemandeController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Route::get('/user', function (Request $request) {
+//     return $request->user();
+// })->middleware('auth:sanctum');
 
-// === Resources 
-Route::apiResource('anneeacademiques', AnneeacademiqueController::class);
-Route::apiResource('demandes', DemandeController::class);
-Route::apiResource('permissions', PermissionController::class);
-Route::apiResource('provinces', ProvinceController::class);
-Route::apiResource('regions', RegionController::class);
-Route::apiResource('repondants', RepondantController::class);
-Route::apiResource('roles', RoleController::class);
-Route::apiResource('sessiondemandes', SessiondemandeController::class);
-Route::apiResource('sessionremises', SessionremiseController::class); 
-Route::apiResource('sims', SimController::class);
-Route::apiResource('sites', SiteController::class);
-Route::apiResource('typerepondants', TyperepondantController::class);
-Route::apiResource('users', UserController::class); 
-// ===
-// === Single routes
-Route::post('demandes/simdeclarerperte', [DemandeController::class, 'simDeclarerPerte'])->name('demandes.simdeclarerperte');
-Route::post('demandes/showby', [DemandeController::class, 'showBy'])->name('demandes.showby');
-Route::post('demandes/assignable', [DemandeController::class, 'demandeAssignable'])->name('demandes.assignable');
-Route::post('demande/attribuer/sim', [DemandeController::class, 'demandeAttribuerSim'])->name('demande.attribuer.sim');
-Route::post('demande/dissocier/sim', [DemandeController::class, 'demandeDissocierSim'])->name('demande.dissocier.sim');
-// Route::post('login', [UserController::class, 'login'])->name('users.login');
-// Route::post('logout/{id}', [UserController::class, 'logout'])->name('users.logout');
-Route::post('repondants/import', [RepondantController::class, 'import'])->name('repondants.import');
-// Route::post('sessiondemandes/getactive', [SessiondemandeController::class, 'getActive'])->name('sessiondemandes.getactive');
-Route::post('sessiondemandes/showby', [SessiondemandeController::class, 'showBy'])->name('sessiondemandes.showby');
-// Route::post('sites/getactive', [SiteController::class, 'getActive'])->name('sites.getactive');
-Route::post('sims/import', [SimController::class, 'import'])->name('sims.import');
-Route::post('sims/attribuer/regions', [SimController::class, 'simAttribuerRegion'])->name('sims.attribuer.regions');
-Route::post('sims/remises', [SimController::class, 'simRemise'])->name('sims.remises');
-Route::post('sims/remettre', [SimController::class, 'simRemettre'])->name('sims.remettre');
-Route::post('users/regeneratepassword', [UserController::class, 'regeneratePassword'])->name('users.regeneratepassword');
-Route::post('users/resetpassword', [UserController::class, 'resetPassword'])->name('users.resetpassword');
-// ===
-
-// === Guest routes
-Route::post('login', [UserController::class, 'login'])->name('users.login');
-Route::post('logout/{id}', [UserController::class, 'logout'])->name('users.logout');
+// === Guest routes ===
+Route::post('/login', [UserController::class, 'login']);
 Route::get('anneeacademiques_getcurrent/{resource}', [AnneeacademiqueController::class, 'getCurrent'])->name('anneeacademiques.getcurrent');
 Route::get('demandes_getcurrent', [DemandeController::class, 'getCurrent'])->name('demandes.getcurrent');
 Route::post('demandes/guestsubmit', [DemandeController::class, 'storeGuestSubmit'])->name('demandes.storeguestsubmit');
@@ -68,11 +31,38 @@ Route::get('sims_regions_dissocier/{region}/{nbrsim}/{anneeacademique}', [SimCon
 Route::post('sims/provinces/associer', [SimController::class, 'linkProvince'])->name('sims.linkprovince');
 Route::get('sims_provinces_dissocier/{province}/{nbrsim}/{anneeacademique}', [SimController::class, 'unlinkProvince'])->name('sims.unlinkprovince');
 Route::get('sites_getactive', [SiteController::class, 'getActive'])->name('sites.getactive');
+// ===
 
-
-
-
-
-
-
-
+// === Protected API routes ===
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/logout', [UserController::class, 'logout']);
+    // === Resources 
+    Route::apiResource('anneeacademiques', AnneeacademiqueController::class);
+    Route::apiResource('demandes', DemandeController::class);
+    Route::apiResource('permissions', PermissionController::class);
+    Route::apiResource('provinces', ProvinceController::class);
+    Route::apiResource('regions', RegionController::class);
+    Route::apiResource('repondants', RepondantController::class);
+    Route::apiResource('roles', RoleController::class);
+    Route::apiResource('sessiondemandes', SessiondemandeController::class);
+    Route::apiResource('sessionremises', SessionremiseController::class);
+    Route::apiResource('sims', SimController::class);
+    Route::apiResource('sites', SiteController::class);
+    Route::apiResource('typerepondants', TyperepondantController::class);
+    Route::apiResource('users', UserController::class);
+    // === Single routes
+    Route::post('demandes/simdeclarerperte', [DemandeController::class, 'simDeclarerPerte'])->name('demandes.simdeclarerperte');
+    Route::post('demandes/showby', [DemandeController::class, 'showBy'])->name('demandes.showby');
+    Route::post('demandes/assignable', [DemandeController::class, 'demandeAssignable'])->name('demandes.assignable');
+    Route::post('demande/attribuer/sim', [DemandeController::class, 'demandeAttribuerSim'])->name('demande.attribuer.sim');
+    Route::post('demande/dissocier/sim', [DemandeController::class, 'demandeDissocierSim'])->name('demande.dissocier.sim');
+    Route::post('repondants/import', [RepondantController::class, 'import'])->name('repondants.import');
+    Route::post('sessiondemandes/showby', [SessiondemandeController::class, 'showBy'])->name('sessiondemandes.showby');
+    Route::post('sims/import', [SimController::class, 'import'])->name('sims.import');
+    Route::post('sims/attribuer/regions', [SimController::class, 'simAttribuerRegion'])->name('sims.attribuer.regions');
+    Route::post('sims/remises', [SimController::class, 'simRemise'])->name('sims.remises');
+    Route::post('sims/remettre', [SimController::class, 'simRemettre'])->name('sims.remettre');
+    Route::post('users/regeneratepassword', [UserController::class, 'regeneratePassword'])->name('users.regeneratepassword');
+    Route::post('users/resetpassword', [UserController::class, 'resetPassword'])->name('users.resetpassword');
+    // 
+});
