@@ -39,7 +39,7 @@ class DatabaseSeeder extends Seeder
         $roles = [
             [
                 // 'id' => 1,
-                'libelle' => "point focal région",
+                'libelle' => "point focal",
                 'description' => null,
                 'active' => "oui"
             ], 

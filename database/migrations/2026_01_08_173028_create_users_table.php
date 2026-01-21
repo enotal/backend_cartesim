@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('active', ["non", "oui"])->default("oui");
             $table->enum('status', ["non", "oui"])->default("non");
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->string('password'); 
             $table->rememberToken();
             $table->timestamps();
             // One-to-many : Province 0..1 <==> 0..* User

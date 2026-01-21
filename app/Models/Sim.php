@@ -56,7 +56,7 @@ class Sim extends Model
     // One-to-many : Sim 0..1 <==> 0..1 Demande
     public function demande()
     {
-        return $this->belongsTo(Demande::class, 'sim_id', 'id');
+        return $this->belongsTo(Demande::class, 'demande_id', 'id');
     }
 
     // One-to-many : Province 0..1 <==> 0..* Sim

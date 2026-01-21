@@ -295,7 +295,7 @@ class SimController extends Controller
      */
     public function simRemise(Request $request)
     {
-        $resource = Sim::whereNotNull('demande_id')->whereNull('simdateremise')->get();
+        $resource = Sim::whereNull('demande_id')->whereNull('simdateremise')->get();
         if ($resource) {
             return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : carte(s) sim disponible(s) !", 'status' => 200]);
         }

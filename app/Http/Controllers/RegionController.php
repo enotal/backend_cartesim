@@ -109,7 +109,7 @@ class RegionController extends Controller
      */
     public function getActive()
     {
-        $resource = Region::with('provinces')->with('provinces.sites')->where('rgnactive', "oui")->get();
+        $resource = Region::with('provinces')->with('provinces.sites')->with('sims')->where('rgnactive', "oui")->get();
         if ($resource->count() > 0) {
             return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : 1 enregistrement trouvé !", "data" => $resource, 'status' => 200]);
         }

@@ -35,7 +35,7 @@ Route::get('sites_getactive', [SiteController::class, 'getActive'])->name('sites
 
 // === Protected API routes ===
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [UserController::class, 'logout']);
+    Route::get('/logout', [UserController::class, 'logout']);
     // === Resources 
     Route::apiResource('anneeacademiques', AnneeacademiqueController::class);
     Route::apiResource('demandes', DemandeController::class);
@@ -60,7 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('sessiondemandes/showby', [SessiondemandeController::class, 'showBy'])->name('sessiondemandes.showby');
     Route::post('sims/import', [SimController::class, 'import'])->name('sims.import');
     Route::post('sims/attribuer/regions', [SimController::class, 'simAttribuerRegion'])->name('sims.attribuer.regions');
-    Route::post('sims/remises', [SimController::class, 'simRemise'])->name('sims.remises');
+    Route::get('sims_remises', [SimController::class, 'simRemise'])->name('sims.remises');
     Route::post('sims/remettre', [SimController::class, 'simRemettre'])->name('sims.remettre');
     Route::post('users/regeneratepassword', [UserController::class, 'regeneratePassword'])->name('users.regeneratepassword');
     Route::post('users/resetpassword', [UserController::class, 'resetPassword'])->name('users.resetpassword');

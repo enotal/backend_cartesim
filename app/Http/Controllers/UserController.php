@@ -131,7 +131,22 @@ class UserController extends Controller
             // $resource->regions()->attach($request->region);
             // 
             if ($response) {
-                return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : enregistrement édité !", 'status' => 200]);
+                // Préparation des données 
+                $user = User::findOrFail($id);
+                // Préparation des données 
+                $userData = [
+                    'id' => $user->id,
+                    'email' => $user->email,
+                    'name' => $user->name,
+                    'lastname' => $user->lastname,
+                    'sexe' => $user->sexe,
+                    'roles' => $user->roles->pluck('rlelibelle'),
+                    'province' => $user->province,
+                    'region' => $user->region,
+                    'token' => null,
+                ];
+                // 
+                return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : enregistrement édité !", "data" => $userData, 'status' => 200]);
             }
             return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : rôle(s) non attaché(s) !", 'status' => 201]);
         }
@@ -194,19 +209,21 @@ class UserController extends Controller
         $key = $user->email . date('Y-m-d') . time();
         $token = $user->createToken($key)->plainTextToken;
         // Préparation des données 
-        $data = [
+        $userData = [
             'id' => $user->id,
             'email' => $user->email,
             'name' => $user->name,
             'lastname' => $user->lastname,
             'sexe' => $user->sexe,
             'roles' => $user->roles->pluck('rlelibelle'),
+            'province' => $user->province,
+            'region' => $user->region,
             'token' => $token,
         ];
         // Mise à jour du statut
         $response = User::findOrFail($user->id)->update(['status' => "oui"]);
         if ($response) {
-            return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : connexion validée !", 'data' => $data, 'status' => 200]);
+            return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : connexion validée !", 'data' => $userData, 'status' => 200]);
         }
         return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : email ou mot de passe incorrect !", 'status' => 201]);
     }
@@ -223,8 +240,8 @@ class UserController extends Controller
             // Updating user status
             if ($response) {
                 $resource = User::findOrFail($user->id)->update(['status' => "non"]);
-                if ($resource){
-                    return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : déconnexion validée !" . $response, 'status' => 200]); 
+                if ($resource) {
+                    return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : déconnexion validée !" . $response, 'status' => 200]);
                 }
                 return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : token inexistant ou impossible à supprimer !", 'status' => 202]);
             }

@@ -53,7 +53,7 @@ class Demande extends Model
     // One-to-many : Sim 0..1 <==> 0..1 Demande
     public function sim()
     {
-        return $this->hasOne(Sim::class, 'sim_id', 'id');
+        return $this->hasOne(Sim::class, 'demande_id', 'id');
     }
 
     // One-to-many : Site 1..1 <==> 0..* Demande

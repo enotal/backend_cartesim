@@ -42,7 +42,7 @@ class DemandeController extends Controller
             return response()->json(['success' => false, 'type' => "danger", 'message' => "Erreur : un champ est obligatoire !", 'status' => 201]);
         }
 
-        $resource = Repondant::with('demandes')->with('demandes.sim')->where('repidentifiant', $request->identifiant)->first();
+        $resource = Repondant::with('demandes')->with('demandes.sim')->where('repidentifiant', $request->identifiant)->get();
 
         if ($resource) {
             $demandCount = $resource->demandes->count();
@@ -71,7 +71,7 @@ class DemandeController extends Controller
                     $order = "Test carte sim";
                     // Mail::to($request->email)->cc('enotal12@yahoo.fr')->bcc('aime.tone@uv.bf')->locale('fr')->send(new DemandeGuestSoumettre($order));
 
-                    return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : Votre demande a bien été soumise !\n Une notification vous a été envoyée à l'adresse [ " . $resource->repemail . " ] !", "data" => $resource, 'status' => 200]);
+                    return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : Votre demande a bien été soumise !\n Une notification vous a été envoyée à l'adresse [ " . $resource->repemail . " ] !".$response, "data" => $resource, 'status' => 200]);
                 }
                 return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : Votre demande n'a pas pu être soumise !\n Merci d'essayer à nouveau !", "data" => $resource, 'status' => 200]);
             } else {
@@ -81,7 +81,7 @@ class DemandeController extends Controller
                 if ($simCount < 1) {
                     return response()->json(['success' => false, 'type' => "warning", 'message' => "Echec : Vous avez déjà une demande en cours : " . $demand->dmdcode . " !", "data" => $resource, 'status' => 200]);
                 }
-                return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : Vous êtes déjà une carte SIM !", "data" => $demand, 'status' => 200]);
+                return response()->json(['success' => false, 'type' => "danger", 'message' => "Echec : Vous êtes déjà bénéficiaire de ".$simCount." carte(s) SIM !", "data" => $demand, 'status' => 200]);
             }
         }
 
