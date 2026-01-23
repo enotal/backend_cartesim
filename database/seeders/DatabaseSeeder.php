@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
                 'libelle' => "point focal",
                 'description' => null,
                 'active' => "oui"
-            ], 
+            ],
             [
                 // 'id' => 2,
                 'libelle' => "chargé de remise",
@@ -141,6 +141,7 @@ class DatabaseSeeder extends Seeder
                 'tyractive' => $typerepondant['active']
             ]);
         }
+        /*
         $tyrs = Typerepondant::all();
 
         // ===
@@ -372,6 +373,6 @@ class DatabaseSeeder extends Seeder
             'typerepondant_id' => $tyrs[0]->id
         ]);
 
-        // ===
+        // === */
     }
 }
