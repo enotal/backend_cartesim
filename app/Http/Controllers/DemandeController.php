@@ -190,8 +190,8 @@ class DemandeController extends Controller
                     // Mail::to($request->user())->cc($moreUsers)->bcc($evenMoreUsers)->queue(new OrderShipped($order));
                     // Méthode 3 : Delayed Message Queueing 
                     // Mail::to($request->user())->cc($moreUsers)->bcc($evenMoreUsers)->later(now()->plus(minutes: 10), new OrderShipped($order));
-                    $order = "Test carte sim";
-                    // Mail::to($request->email)->cc('enotal12@yahoo.fr')->bcc('aime.tone@uv.bf')->locale('fr')->send(new DemandeGuestSoumettre($order));
+                    $order = "Test cartesim";
+                    Mail::to($request->email)->cc('enotal12@yahoo.fr')->bcc('aime.tone@uv.bf')->locale('fr')->send(new DemandeGuestSoumettre($order));
 
                     return response()->json(['success' => true, 'type' => "success", 'message' => "Succès : Votre demande a bien été soumise !\n Une notification vous a été envoyée à l'adresse [ " . $resource->repemail . " ] !", "data" => $resource, 'status' => 200]);
                 }
