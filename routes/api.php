@@ -35,7 +35,9 @@ Route::get('sites_getactive', [SiteController::class, 'getActive'])->name('sites
 
 // === Protected API routes ===
 Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/logout', [UserController::class, 'logout']);
+    // Route::post('anneeacademiques_getcurrent/{resource}', [AnneeacademiqueController::class, 'getCurrent'])->name('anneeacademiques.getcurrent');
+
+    Route::post('/logout', [UserController::class, 'logout']);
     // === Resources 
     Route::apiResource('anneeacademiques', AnneeacademiqueController::class);
     Route::apiResource('demandes', DemandeController::class);
